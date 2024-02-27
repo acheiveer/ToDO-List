@@ -1,7 +1,9 @@
 import { validationResult } from "express-validator";
 import { jsonGenerate } from "../utils/helpers.js";
-import { StatusCode } from "../utils/constants.js";
+import { StatusCode,JWT_TOKEN_SECRET } from "../utils/constants.js";
 import bcrypt from 'bcrypt';
+import User from "../models/user.js";
+import Jwt from 'jsonwebtoken';
 
 const Register = async (req,res)=>{
 
@@ -14,6 +16,15 @@ const Register = async (req,res)=>{
        const salt= await bcrypt.genSalt(10);
        const hashPassword = await bcrypt.hash(password,salt);
        
+       const userExist=await User.findOne({ $or: [{
+        email: email
+       },{
+        username:username
+       }]});
+
+       if(userExist){
+        return res.json(jsonGenerate(StatusCode.UNPROCESSABLE_ENTITY,"User or Email already exists"));
+       }
 
        // save to db
        try{
@@ -23,7 +34,10 @@ const Register = async (req,res)=>{
             password:hashPassword,
             username:username
         })
-        res.json(jsonGenerate(StatusCode.success,"Registration successful",result));
+
+        const token=Jwt.sign({userId:result._id},JWT_TOKEN_SECRET);
+       
+        res.json(jsonGenerate(StatusCode.success,"Registration successful",{userId:result._id,token:token}));
        } catch(error){
         console.log(error);
        }
@@ -31,7 +45,7 @@ const Register = async (req,res)=>{
     }
 
 
-    res.json(jsonGenerate(StatusCode.VALIDATION_ERROR,"validation error",errors.mapped()));
+   // res.json(jsonGenerate(StatusCode.VALIDATION_ERROR,"validation error",errors.mapped()));
 }
 
 export default Register;
