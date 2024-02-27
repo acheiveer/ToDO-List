@@ -5,7 +5,7 @@ import { DB_CONNECT } from "./utils/constants.js";
 
 const app = express();
 mongoose.set('strictQuery', false);
-mongoose.connect(DB_CONNECT,{},(e)=>console.log('e'));
+mongoose.connect(DB_CONNECT,{},(error)=>console.log(error));
 
 const PORT=8000;
 

@@ -9,7 +9,7 @@ const Register = async (req,res)=>{
 
     if(errors.isEmpty()){
 
-       const {name,usename,password,email}=req.body;
+       const {name,username,password,email}=req.body;
 
        const salt= await bcrypt.genSalt(10);
        const hashPassword = await bcrypt.hash(password,salt);
