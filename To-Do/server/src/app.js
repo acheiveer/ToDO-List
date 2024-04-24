@@ -21,7 +21,7 @@ mongoose.connect(DB_CONNECT, {
 const PORT=8000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json());  // either we use body-parser by importing and using it app.use(bodyparser.json());
 app.use('/api/',apiRoute);
 app.use('/api/',AuthMiddleware,apiProtected);
 
